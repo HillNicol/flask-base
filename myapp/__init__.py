@@ -4,6 +4,7 @@
 
 from flask import Flask, render_template, request #render la utilizamos para  devolver el html y el template son las plantillas(cosas que se jalan de la base de datos)
 from flask_sqlalchemy import SQLAlchemy #orm que va a mapear nuestro codigo a codigo sql 
+from flask_migrate import Migrate
 from myapp.config import DevConfig 
 
 
@@ -14,14 +15,18 @@ app.config.from_object(DevConfig) #config. para decirle al servidor si se ejecut
 
 #Para la configuracion de la BD
 db = SQLAlchemy(app) #app objeto principal 
+migrate = Migrate(app, db)
 from myapp.task.controllers import taskRoute
 app.register_blueprint(taskRoute)
+
 #Para la creacion de las tablas en la base de datos
-with app.app_context(): #arrancar la base de datos
-    db.create_all()
+#with app.app_context(): #arrancar la base de datos
+  #  db.create_all()
 
 
 @app.route('/') #esta es una ruta global
 def hello_world() -> str: #esto es una tupla y la va a guardar abajo
     name = request.args.get('name', 'Valor por defecto')
     return render_template('index.html', task="Josue",name=name) #aqui nos va a regresar un html con los datos que metimos y los de la base de datos 
+
+
