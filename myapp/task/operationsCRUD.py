@@ -1,10 +1,17 @@
 from sqlalchemy.orm import Session
 from myapp.task import models
 from myapp import db
-def getById(id: int): #select por id 
+#def getById(id: int): #select por id 
+def getById(id: int, show404=False):
     #task = db.session.query(models.Task).filter(models.Task.id == id).first()
-    task = db.session.query(models.Task).get(id) #query para busqueda 
-    #task = models.Task.query.get_or_404(id) 
+    #task = db.session.query(models.Task).get(id) #query para busqueda 
+    #task = models.Task.query.get_or_404(id)
+ 
+    if show404:
+        task = models.Task.query.get_or_404(id)
+    else:
+        task = db.session.query(models.Task).get(id)
+    
     return task
     
 def getAll(): # trae tdo lo de la tabla
@@ -28,10 +35,11 @@ def update(id:int, name: str): #actualizar por id y por nombre
     
     
 def delete(id:int): #necesitamos el id
-    taskdb = getById(id=id) #obtenemos el registro
+    #taskdb = getById(id=id) #obtenemos el registro
+
     db.session.delete(taskdb) #lo borramos
     db.session.commit() #guardamos
-    
+    taskdb = getById(id=id, show404=True)
 def pagination(page:int=1, size:int=10): # solo nos muestra 10 de la pagina 1 
     taskdb = models.Task.query.paginate(page=page, per_page=size)
     return taskdb
